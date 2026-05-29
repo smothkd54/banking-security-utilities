@@ -81,10 +81,6 @@ if __name__ == "__main__":
     print("🔐 Banking Security Utilities")
     print(f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
     
-    def load_hmac_key(key_path="hmac_secret.key") -> bytes:
-     with open(key_path, "rb") as f:
-      return f.read()
-    
     # Demo all functions
     generate_secure_token(32)
     generate_api_key("bsu")
