@@ -24,5 +24,8 @@ a1b2c3d4e5f67890123456789abcdef0
 Uses `secrets.token_hex(16)` → 32-character hexadecimal string
 16 bytes of entropy (recommended for production use)
 
+## Roadmap
+- Add more security utilities (password strength checker, encryption helpers, etc.)
+
 ## License
 MIT License
