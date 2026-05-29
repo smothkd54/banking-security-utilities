@@ -1,17 +1,84 @@
 import secrets
+import hashlib
+import string
+from datetime import datetime
 
-def generate_secure_token():
-    # Generates a secure, random hexadecimal string
-    secret_key = secrets.token_hex(16)
-    print("=== SECURE SERVER KEY GENERATED ===")
-    print(secret_key)
-    
-def generate_api_key():
-    """Generate a secure API key with prefix"""
+
+def generate_secure_token(length: int = 32) -> str:
+    """Generate a cryptographically secure random token."""
+    token = secrets.token_hex(length // 2)
+    print(f"=== SECURE TOKEN GENERATED ({length} characters) ===")
+    print(token)
+    return token
+
+
+def generate_api_key(prefix: str = "bsu") -> str:
+    """Generate a secure API key with custom prefix."""
     key = secrets.token_hex(24)
-    return f"bsu_{key}"
+    api_key = f"{prefix}_{key}"
+    print(f"\n=== API KEY GENERATED ===")
+    print(api_key)
+    return api_key
+
+
+def generate_strong_password(length: int = 16) -> str:
+    """Generate a strong password that meets banking complexity requirements."""
+    if length < 12:
+        length = 12
+
+    # Define character sets
+    lowercase = string.ascii_lowercase
+    uppercase = string.ascii_uppercase
+    digits = string.digits
+    special = "!@#$%^&*()-_=+ "
+
+    # Guarantee at least one of each type
+    password = [
+        secrets.choice(lowercase),
+        secrets.choice(uppercase),
+        secrets.choice(digits),
+        secrets.choice(special)
+    ]
+
+    # Fill the rest randomly
+    alphabet = lowercase + uppercase + digits + special
+    password.extend(secrets.choice(alphabet) for _ in range(length - 4))
+
+    # Shuffle the password
+    secrets.SystemRandom().shuffle(password)
+    
+    final_password = ''.join(password)
+    
+    print(f"\n=== STRONG PASSWORD GENERATED ({length} characters) ===")
+    print(final_password)
+    print("✓ Contains uppercase, lowercase, number & special character")
+    return final_password
+
+
+def generate_secret_key() -> str:
+    """Generate a high-entropy secret key (suitable for web frameworks)."""
+    key = secrets.token_hex(32)
+    print(f"\n=== SECRET KEY GENERATED ===")
+    print(key)
+    return key
+
+
+def hash_string(data: str, algorithm: str = "sha256") -> str:
+    """Hash a string using SHA-256 or SHA-512."""
+    if algorithm == "sha512":
+        return hashlib.sha512(data.encode('utf-8')).hexdigest()
+    return hashlib.sha256(data.encode('utf-8')).hexdigest()
+
 
 if __name__ == "__main__":
-    generate_secure_token()
-    print("\n=== SECURE API KEY GENERATED ===")
-    print(generate_api_key())
+    print("🔐 Banking Security Utilities")
+    print(f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+    
+    # Demo all functions
+    generate_secure_token(32)
+    generate_api_key("bsu")
+    generate_strong_password(16)
+    generate_secret_key()
+    
+    print("\n=== EXAMPLE HASH (SHA-256) ===")
+    print(hash_string("BankingSecure2026!"))
