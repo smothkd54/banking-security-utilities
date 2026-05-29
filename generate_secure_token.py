@@ -30,7 +30,7 @@ def generate_strong_password(length: int = 16) -> str:
     lowercase = string.ascii_lowercase
     uppercase = string.ascii_uppercase
     digits = string.digits
-    special = "!@#$%^&*()-_=+ "
+    special = "!@#$%^&*()-_=+"
 
     # Guarantee at least one of each type
     password = [
