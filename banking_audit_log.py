@@ -1,29 +1,23 @@
-import hashlib
 from datetime import datetime
-# Crucial Link: Import the specific token generation file
 import generate_secure_token
 
 def write_secure_audit_log(account_id, action_type, amount):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-    # 🔒 Real Relationship: Call the function from generate_secure_token to authorize the log
-    # This simulates checking a secure system API Key before recording financial changes
-    runtime_session_token = generate_secure_token.generate_api_key("ledger_auth")
-
-    # Combine transaction parameters with the imported secure key to create a unique banking payload
-    raw_payload = f"{timestamp}|{account_id}|{action_type}|{amount}|{runtime_session_token}"
-
-    # Generate an unalterable database row cryptographic signature using the hash function from your first script
-    row_signature = generate_secure_token.hash_string(raw_payload)
-
-    log_line = f"[{timestamp}] ACCT: {account_id} | {action_type} | AMT: ${amount} | SECURE_TOKEN: {runtime_session_token[:15]}... | SIGNATURE: {row_signature[:16]}\n"
-
+    
+    # Now this works – the function exists in the module
+    key = generate_secure_token.load_hmac_key("hmac_secret.key")
+    payload = f"{timestamp}|{account_id}|{action_type}|{amount}"
+    full_sig = generate_secure_token.hmac_sign(payload, key)
+    short_sig = full_sig[:16]
+    
+    log_line = f"[{timestamp}] ACCT: {account_id} | {action_type} | AMT: ${amount} | SIG: {short_sig}\n"
+    
     with open("banking_ledger.log", "a") as ledger:
         ledger.write(log_line)
-
+    
     print(f"=== SECURE TRANSACTION LEDGER RECORDED ===")
-    print(f"Action Verified: {action_type} of ${amount} for Account {account_id}")
-    print(f"Cryptographic Signature: {row_signature[:16]} [SECURE]\n")
+    print(f"{action_type} of ${amount} for Account {account_id}")
+    print(f"HMAC Signature: {short_sig}\n")
 
 if __name__ == "__main__":
     print("Initializing Connected Banking Services...")

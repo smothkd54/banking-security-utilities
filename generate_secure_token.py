@@ -1,7 +1,12 @@
 import secrets
 import hashlib
 import string
+import hmac
 from datetime import datetime
+
+def hmac_sign(data: str, key: bytes, algorithm=hashlib.sha256) -> str:
+    """Return HMAC hex digest of data using given key and hash algorithm."""
+    return hmac.new(key, data.encode(), algorithm).hexdigest()
 
 
 def generate_secure_token(length: int = 32) -> str:
@@ -54,7 +59,6 @@ def generate_strong_password(length: int = 16) -> str:
     print("✓ Contains uppercase, lowercase, number & special character")
     return final_password
 
-
 def generate_secret_key() -> str:
     """Generate a high-entropy secret key (suitable for web frameworks)."""
     key = secrets.token_hex(32)
@@ -62,6 +66,9 @@ def generate_secret_key() -> str:
     print(key)
     return key
 
+def load_hmac_key(key_path="hmac_secret.key") -> bytes:
+    with open(key_path, "rb") as f:
+        return f.read()
 
 def hash_string(data: str, algorithm: str = "sha256") -> str:
     """Hash a string using SHA-256 or SHA-512."""
@@ -73,6 +80,10 @@ def hash_string(data: str, algorithm: str = "sha256") -> str:
 if __name__ == "__main__":
     print("🔐 Banking Security Utilities")
     print(f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+    
+    def load_hmac_key(key_path="hmac_secret.key") -> bytes:
+     with open(key_path, "rb") as f:
+      return f.read()
     
     # Demo all functions
     generate_secure_token(32)
