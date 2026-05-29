@@ -6,7 +6,9 @@ A collection of security utilities for banking and financial applications.
 - Secure random token/key generation using Python's `secrets` module
 - Cryptographically secure (better than `random` module)
 - Suitable for API keys, session tokens, and encryption keys
-- Secure transaction audit logging with cryptographic signatures
+- Secure transaction audit logging with HMAC-SHA256 signatures
+- HMAC-based ledger integrity verification
+- Secure HMAC key setup utility
 
 ## How to Use
 
@@ -17,11 +19,17 @@ git clone https://github.com/smothkd54/banking-security-utilities.git
 # Navigate to the project directory
 cd banking-security-utilities
 
+# Generate HMAC secret key (first time only)
+python setup_key.py
+
 # Run the secure token generator
 python generate_secure_token.py
 
 # Run the secure transaction audit log
 python banking_audit_log.py
+
+# Validate ledger integrity with HMAC verification
+python validate_ledger.py
 ```
 
 ## Example Output
@@ -52,52 +60,25 @@ bsu_b8824758560be8598fece33943a7ebcb30c1071b00ee7294
 ### Secure Transaction Audit Log
 
 ```
-=== API KEY GENERATED ===
-ledger_auth_01039c3ba9b48f404757297a363ebe26364e21698fddbdc0
 === SECURE TRANSACTION LEDGER RECORDED ===
-Action Verified: DEPOSIT of $1500.00 for Account ACC-9982
-Cryptographic Signature: e6130a77d7fa7b3e [SECURE]
+DEPOSIT of $1500.00 for Account ACC-9982
+HMAC Signature: 2b445d3fa92f9e86
 
-=== API KEY GENERATED ===
-ledger_auth_0e41aba3a0ba9c9348740f43f930147f32a2a60bc9884b2d
 === SECURE TRANSACTION LEDGER RECORDED ===
-Action Verified: WITHDRAWAL of $45.50 for Account ACC-1104
-Cryptographic Signature: 08aefc8d0092ca35 [SECURE]
+WITHDRAWAL of $45.50 for Account ACC-1104
+HMAC Signature: 5e30699c0f89002c
+```
 
-=== API KEY GENERATED ===
-ledger_auth_a8b09845daea65f745d0e7e524d1f0ae8762b3708bf41132
-=== SECURE TRANSACTION LEDGER RECORDED ===
-Action Verified: DEPOSIT of $250.75 for Account ACC-3341
-Cryptographic Signature: c5f283050b9c4cf1 [SECURE]
+### Ledger Integrity Audit (HMAC)
 
-=== API KEY GENERATED ===
-ledger_auth_07dba9369979ab2a83d99c55b74b899390a63e769572ead4
-=== SECURE TRANSACTION LEDGER RECORDED ===
-Action Verified: WITHDRAWAL of $120.00 for Account ACC-2705
-Cryptographic Signature: 32cd56fabbc967a0 [SECURE]
-
-=== API KEY GENERATED ===
-ledger_auth_9be7bbac105b21ad3ca4df4c0ba2901c8d7abfc11ddd1a7a
-=== SECURE TRANSACTION LEDGER RECORDED ===
-Action Verified: DEPOSIT of $3000.00 for Account ACC-5562
-Cryptographic Signature: 8f1ab768f423a2d8 [SECURE]
-
-=== API KEY GENERATED ===
-ledger_auth_d2a693b8069e05413fc395376c35c8dce10a406eaf839f74
-=== SECURE TRANSACTION LEDGER RECORDED ===
-Action Verified: WITHDRAWAL of $99.99 for Account ACC-8910
-Cryptographic Signature: dda360ba8fda7e5d [SECURE]
-
-=== API KEY GENERATED ===
-ledger_auth_df188f2daeb966f79ccaffb960476adcdf316e9e1cab81ba
-=== SECURE TRANSACTION LEDGER RECORDED ===
-Action Verified: DEPOSIT of $47.25 for Account ACC-1237
-Cryptographic Signature: 39051f2d8b24d269 [SECURE]
+```
+Line 15: ✅ VERIFIED (Account ACC-9982)
+Line 16: ✅ VERIFIED (Account ACC-1104)
 ```
 
 ## Security Best Practices
-Uses `secrets.token_hex(16)` → 32-character hexadecimal string
-16 bytes of entropy (recommended for production use)
+- Token/key generation: `secrets.token_hex(16)` → 32-character hex string, 16 bytes entropy
+- Ledger signing: HMAC-SHA256 ensures transaction integrity and tamper detection
 
 ## License
 MIT License — see the [LICENSE](LICENSE) file for details.
