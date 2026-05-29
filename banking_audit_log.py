@@ -1,4 +1,4 @@
- import hashlib
+import hashlib
 from datetime import datetime
 
 def write_audit_log(account_id, action_type, amount):
