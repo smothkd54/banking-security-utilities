@@ -11,7 +11,7 @@ A collection of security utilities for banking and financial applications.
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/banking-security-utilities.git
+git clone https://github.com/smothkd54/banking-security-utilities.git
 
 # Navigate to the project directory
 cd banking-security-utilities
