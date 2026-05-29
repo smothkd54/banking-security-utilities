@@ -1,7 +1,7 @@
 import hashlib
 import secrets
 from datetime import datetime
-# 🔗 Linking the modules: Importing functions from your first script
+# 🔗 Linking the modules: Importing functions from generate_secure_token.py
 import generate_secure_token
 
 def write_secure_audit_log(account_id, action_type, amount):
