@@ -10,6 +10,13 @@ A collection of security utilities for banking and financial applications.
 ## How to Use
 
 ```bash
+# Clone the repository
+git clone https://github.com/your-username/banking-security-utilities.git
+
+# Navigate to the project directory
+cd banking-security-utilities
+
+# Run the secure token generator
 python generate_secure_token.py
 ```
 
