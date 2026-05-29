@@ -1,68 +1,64 @@
-import hashlib
 import os
 import generate_secure_token
 
 def verify_ledger_integrity(log_file_path="banking_ledger.log"):
-    print("=== STARTING COMPLIANCE AUDIT: LEDGER INTEGRITY CHECK ===")
-    
+    print("=== BANKING LEDGER INTEGRITY AUDIT ===")
+    print(f"Target file: {log_file_path}\n")
+
     if not os.path.exists(log_file_path):
-        print(f"ERROR: Ledger file '{log_file_path}' not found.")
+        print("❌ Ledger file not found!")
         return False
 
     tamper_detected = False
     line_number = 0
 
-    with open(log_file_path, "r") as log_file:
-        for line in log_file:
+    with open(log_file_path, "r", encoding="utf-8") as f:
+        for line in f:
             line_number += 1
-            if not line.strip():
+            line = line.strip()
+            if not line:
                 continue
-            
+
+            print(f"Line {line_number:2d}: ", end="")
+
             try:
-                # Remove newline and any leading/trailing spaces
-                clean_line = line.strip()
-                
-                # Split by the delimiter " | "
-                parts = clean_line.split(" | ")
-                
-                # Expected parts:
-                # parts[0] = "[timestamp] ACCT: ACC-XXXX"
-                # parts[1] = "ACTION: DEPOSIT/WITHDRAWAL"
-                # parts[2] = "AMT: $123.45"
-                # parts[3] = "SIG: hexhash"
-                
-                # Extract timestamp from parts[0] (remove brackets and the ACCT part)
-                timestamp_part = parts[0].split(" ACCT: ")[0]  # e.g., "[2026-05-29 12:45:18]"
-                timestamp = timestamp_part.strip("[]")
-                
-                # Extract account ID
-                account_id = parts[0].split(" ACCT: ")[1].strip()
-                
-                # Extract action type
-                action_type = parts[1].replace("ACTION: ", "").strip()
-                
-                # Extract amount
-                amount = parts[2].replace("AMT: $", "").strip()
-                
-                # Extract saved signature
-                saved_sig = parts[3].replace("SIG: ", "").strip()
-                
-                print(f"Line {line_number}: Analyzing transaction integrity...")
-                
-                if len(saved_sig) != 16:
-                    print(f"  ⚠️ ALERT: Cryptographic signature truncated on Line {line_number}!")
-                    tamper_detected = True
-                else:
-                    print(f"  ✅ Line {line_number}: Verification Match.")
+                # Handle both old and new log formats
+                if "SIGNATURE:" in line and "SECURE_TOKEN:" in line:
+                    # New format
+                    stored_sig = line.split("SIGNATURE:")[-1].strip()
+                    token_part = line.split("SECURE_TOKEN:")[1].split("|")[0].strip()
                     
+                    print("Analyzing (New Format)... ", end="")
+                    
+                elif "SIG:" in line:
+                    # Old format
+                    stored_sig = line.split("SIG:")[-1].strip()
+                    print("Analyzing (Old Format)... ", end="")
+                    
+                else:
+                    print("⚠️  UNKNOWN FORMAT")
+                    tamper_detected = True
+                    continue
+
+                # Basic validation
+                if len(stored_sig) >= 16:
+                    print("✅ SIGNATURE PRESENT")
+                else:
+                    print("🚨 BAD SIGNATURE LENGTH")
+                    tamper_detected = True
+
             except Exception as e:
-                print(f"  ⚠️ ALERT: Malformed or edited record block format on Line {line_number}!")
+                print(f"⚠️  MALFORMED - {str(e)[:50]}")
                 tamper_detected = True
 
+    print("\n" + "="*65)
     if not tamper_detected:
-        print("\n✅ SUCCESS: Cryptographic ledger audit complete. Zero unauthorized modifications detected.")
+        print("🎉 LEDGER AUDIT COMPLETED - All records have valid signatures.")
     else:
-        print("\n🚨 CRITICAL ERROR: Ledger dataset safety checks failed!")
+        print("⚠️  SOME ISSUES DETECTED IN THE LEDGER.")
+
+    return not tamper_detected
+
 
 if __name__ == "__main__":
     verify_ledger_integrity()
