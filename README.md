@@ -6,10 +6,13 @@ A collection of security utilities for banking and financial applications.
 
 ## Features
 - Cryptographically secure token/key generation using Python's `secrets` module (better than `random`)
-- Suitable for API keys, session tokens, and encryption keys
 - Secure transaction audit logging with HMAC-SHA256 signatures
 - HMAC-based ledger integrity verification
-- Secure HMAC key setup utility
+- Fernet-based symmetric data encryption (strings and files)
+- Key rotation for encrypted data
+- Credit card validation (Luhn algorithm)
+- PII sanitization (email, phone, account masking with country-aware formatting)
+- Password strength evaluation (0-5 score)
 
 ## How to Use
 
@@ -23,19 +26,52 @@ cd banking-security-utilities
 # Install the package
 pip install -e .
 
+# --- Token & Key Generation ---
 # Generate HMAC secret key (first time only)
 python -m scripts.setup_key
 
 # Run the secure token generator
 python -m scripts.generate_token
 
+# --- Audit Logging ---
 # Run the secure transaction audit log
 python -m scripts.run_audit
 
 # Validate ledger integrity with HMAC verification
 python -m scripts.validate_ledger
 
-# Install dev dependencies and run tests
+# --- Data Encryption ---
+# Generate encryption key (first time only)
+python -m scripts.encrypt_data genkey
+
+# Encrypt a string
+python -m scripts.encrypt_data encrypt "Hello Bank"
+
+# Decrypt a string
+python -m scripts.encrypt_data decrypt "gAAAAAB..."
+
+# Encrypt a file
+python -m scripts.encrypt_data encrypt-file report.pdf
+
+# Decrypt a file
+python -m scripts.encrypt_data decrypt-file data\report.pdf.enc
+
+# Rotate encryption key (re-encrypts all .enc files)
+python -m scripts.encrypt_data rotate
+
+# --- Compliance Utilities ---
+# Validate credit card number (Luhn algorithm)
+python -m scripts.compliance validate-card 4111111111111111
+
+# Sanitize PII
+python -m scripts.compliance sanitize-email "john@bank.com"
+python -m scripts.compliance sanitize-phone "+1-234-555-7890"
+python -m scripts.compliance sanitize-acct "1234567890"
+
+# Check password strength
+python -m scripts.compliance check-password "MyP@ssw0rd!"
+
+# --- Testing ---
 pip install -e ".[dev]"
 pytest tests/ -v
 ```
@@ -49,8 +85,8 @@ banking-security-utilities/
 │   ├── crypto.py          # Token/key generation, hashing, HMAC
 │   ├── audit.py           # Secure transaction audit logging
 │   ├── validate.py        # Ledger integrity verification
-│   ├── encrypt.py         # (coming soon)
-│   ├── compliance.py      # (coming soon)
+│   ├── encrypt.py         # Fernet encryption, key rotation
+│   ├── compliance.py      # Card validation, PII sanitizer, password strength
 │   ├── auth.py            # (coming soon)
 │   └── monitor.py         # (coming soon)
 ├── scripts/
@@ -58,17 +94,19 @@ banking-security-utilities/
 │   ├── setup_key.py
 │   ├── generate_token.py
 │   ├── run_audit.py
-│   └── validate_ledger.py
+│   ├── validate_ledger.py
+│   ├── encrypt_data.py
+│   └── compliance.py
 ├── data/                  # Runtime files (gitignored)
 ├── tests/
 │   ├── __init__.py
 │   ├── test_crypto.py
-│   └── test_validate.py
+│   ├── test_validate.py
+│   └── test_compliance.py
 ├── .github/
 │   └── workflows/
 │       └── test.yml
 ├── pyproject.toml
-├── requirements.txt
 ├── LICENSE
 └── README.md
 ```
@@ -117,9 +155,37 @@ Line 1: ✅ VERIFIED (Account ACC-9982)
 Line 2: ✅ VERIFIED (Account ACC-1104)
 ```
 
+### Data Encryption
+
+```
+=== ENCRYPTION KEY GENERATED ===
+Key saved to data/encryption_key.key
+
+=== ENCRYPTED ===
+gAAAAABqGrAbeFJOZ14IA5o85nEUynqHLIDSzUX8DI_VLa-f0lnOYrp_xHdnRkc247I6xqypruCDsz8EQxkXt8Rex4TQZQGdxg==
+```
+
+### Compliance
+
+```
+=== CARD VALIDATION ===
+✅ VALID card number
+
+=== PII SANITIZATION ===
+Email: j***@bank.com
+Phone: +1 *** *** 7890
+Account: ****-7890
+
+=== PASSWORD STRENGTH ===
+Rating: Very Strong (5/5)
+```
+
 ## Security Best Practices
 - Token/key generation: `secrets.token_hex(16)` → 32-character hex string, 16 bytes entropy
 - Ledger signing: HMAC-SHA256 ensures transaction integrity and tamper detection
+- Data encryption: Fernet (AES-128-CBC with HMAC-SHA256)
+- Key rotation: all encrypted files re-encrypted on key change
+- Key storage: `data/encryption_key.key` and `data/hmac_secret.key` are gitignored
 
 ## License
 MIT License — see the [LICENSE](LICENSE) file for details.
