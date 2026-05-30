@@ -42,3 +42,5 @@ Thumbs.db
 
 data/hmac_secret.key
 data/banking_ledger.log
+
+data/encryption_key.key
