@@ -21,12 +21,17 @@ def sanitize_email(email: str) -> str:
     domain = email[at_index:]
     return f"{local[0]}***{domain}"
 
+SINGLE_DIGIT_CODES = {"1", "7"}
+
 def sanitize_phone(phone: str) -> str:
-    """Mask phone: keep last 4 digits, mask rest."""
     digits = re.sub(r"\D", "", phone)
     if len(digits) < 4:
         return phone
-    return f"****-{digits[-4:]}"
+    if phone.strip().startswith("+"):
+        code_len = 1 if digits[0] in SINGLE_DIGIT_CODES else 3
+        return f"+{digits[:code_len]} *** *** {digits[-4:]}"
+    else:
+        return f"****-{digits[-4:]}"
 
 def sanitize_account_number(acct: str) -> str:
     """Mask account number: show last 4."""

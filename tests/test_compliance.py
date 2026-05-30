@@ -10,7 +10,13 @@ def test_sanitize_email():
     assert sanitize_email("john@bank.com") == "j***@bank.com"
 
 def test_sanitize_phone():
-    assert sanitize_phone("+1-234-555-7890") == "****-7890"
+    assert sanitize_phone("+1-234-555-7890") == "+1 *** *** 7890"
+
+def test_sanitize_phone_russia():
+    assert sanitize_phone("+7-495-123-4567") == "+7 *** *** 4567"
+
+def test_sanitize_phone_local():
+    assert sanitize_phone("08123456789") == "****-6789"
 
 def test_sanitize_acct():
     assert sanitize_account_number("1234567890") == "****-7890"
