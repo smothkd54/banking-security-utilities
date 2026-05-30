@@ -1,3 +1,5 @@
+[![Test](https://github.com/smothkd54/banking-security-utilities/actions/workflows/test.yml/badge.svg)](https://github.com/smothkd54/banking-security-utilities/actions/workflows/test.yml)
+
 # Banking Security Utilities 🔐
 
 A collection of security utilities for banking and financial applications.
@@ -32,6 +34,10 @@ python -m scripts.run_audit
 
 # Validate ledger integrity with HMAC verification
 python -m scripts.validate_ledger
+
+# Install dev dependencies and run tests
+pip install -e ".[dev]"
+pytest tests/ -v
 ```
 
 ## Project Structure
@@ -55,6 +61,12 @@ banking-security-utilities/
 │   └── validate_ledger.py
 ├── data/                  # Runtime files (gitignored)
 ├── tests/
+│   ├── __init__.py
+│   ├── test_crypto.py
+│   └── test_validate.py
+├── .github/
+│   └── workflows/
+│       └── test.yml
 ├── pyproject.toml
 ├── requirements.txt
 ├── LICENSE
