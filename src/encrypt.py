@@ -44,3 +44,17 @@ def decrypt_file(enc_path: str, key: bytes, output_dir: str = "data") -> str:
     output_path.write_bytes(plaintext)
     print(f"Decrypted → {output_path}")
     return str(output_path)
+
+def rotate_key(old_key: bytes, new_key: bytes, target_dir: str = "data", ext: str = ".enc") -> int:
+    """Re-encrypt all matching files in target_dir with a new key."""
+    f_old = Fernet(old_key)
+    f_new = Fernet(new_key)
+    count = 0
+    for enc_path in Path(target_dir).glob(f"*{ext}"):
+        ciphertext = enc_path.read_bytes()
+        plaintext = f_old.decrypt(ciphertext)
+        new_ciphertext = f_new.encrypt(plaintext)
+        enc_path.write_bytes(new_ciphertext)
+        print(f"Re-encrypted {enc_path.name}")
+        count += 1
+    return count
