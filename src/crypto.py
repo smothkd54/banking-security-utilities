@@ -2,6 +2,7 @@ import secrets
 import hashlib
 import string
 import hmac
+from pathlib import Path
 
 def hmac_sign(data: str, key: bytes, algorithm=hashlib.sha256) -> str:
     """Return HMAC hex digest of data using given key and hash algorithm."""
@@ -53,7 +54,9 @@ def generate_secret_key() -> str:
     return key
 
 def load_hmac_key(key_path="data/hmac_secret.key") -> bytes:
-    with open(key_path, "rb") as f:
+    base_dir = Path(__file__).parent.parent
+    full_path = base_dir / key_path
+    with open(full_path, "rb") as f:
         return f.read()
 
 def hash_string(data: str, algorithm: str = "sha256") -> str:

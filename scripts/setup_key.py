@@ -1,4 +1,9 @@
+from pathlib import Path
 import secrets
-with open("data/hmac_secret.key", "wb") as f:
+
+base_dir = Path(__file__).parent.parent
+key_path = base_dir / "data" / "hmac_secret.key"
+key_path.parent.mkdir(exist_ok=True)
+with open(key_path, "wb") as f:
     f.write(secrets.token_bytes(32))
-print("HMAC key generated. Add 'data/hmac_secret.key' to .gitignore")
+print("HMAC key generated.")
