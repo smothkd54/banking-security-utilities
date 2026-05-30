@@ -2,12 +2,10 @@ import secrets
 import hashlib
 import string
 import hmac
-from datetime import datetime
 
 def hmac_sign(data: str, key: bytes, algorithm=hashlib.sha256) -> str:
     """Return HMAC hex digest of data using given key and hash algorithm."""
     return hmac.new(key, data.encode(), algorithm).hexdigest()
-
 
 def generate_secure_token(length: int = 32) -> str:
     """Generate a cryptographically secure random token."""
@@ -15,7 +13,6 @@ def generate_secure_token(length: int = 32) -> str:
     print(f"=== SECURE TOKEN GENERATED ({length} characters) ===")
     print(token)
     return token
-
 
 def generate_api_key(prefix: str = "bsu") -> str:
     """Generate a secure API key with custom prefix."""
@@ -25,35 +22,24 @@ def generate_api_key(prefix: str = "bsu") -> str:
     print(api_key)
     return api_key
 
-
 def generate_strong_password(length: int = 16) -> str:
     """Generate a strong password that meets banking complexity requirements."""
     if length < 12:
         length = 12
-
-    # Define character sets
     lowercase = string.ascii_lowercase
     uppercase = string.ascii_uppercase
     digits = string.digits
     special = "!@#$%^&*()-_=+"
-
-    # Guarantee at least one of each type
     password = [
         secrets.choice(lowercase),
         secrets.choice(uppercase),
         secrets.choice(digits),
         secrets.choice(special)
     ]
-
-    # Fill the rest randomly
     alphabet = lowercase + uppercase + digits + special
     password.extend(secrets.choice(alphabet) for _ in range(length - 4))
-
-    # Shuffle the password
     secrets.SystemRandom().shuffle(password)
-    
     final_password = ''.join(password)
-    
     print(f"\n=== STRONG PASSWORD GENERATED ({length} characters) ===")
     print(final_password)
     print("✓ Contains uppercase, lowercase, number & special character")
@@ -66,7 +52,7 @@ def generate_secret_key() -> str:
     print(key)
     return key
 
-def load_hmac_key(key_path="hmac_secret.key") -> bytes:
+def load_hmac_key(key_path="data/hmac_secret.key") -> bytes:
     with open(key_path, "rb") as f:
         return f.read()
 
@@ -75,17 +61,3 @@ def hash_string(data: str, algorithm: str = "sha256") -> str:
     if algorithm == "sha512":
         return hashlib.sha512(data.encode('utf-8')).hexdigest()
     return hashlib.sha256(data.encode('utf-8')).hexdigest()
-
-
-if __name__ == "__main__":
-    print("🔐 Banking Security Utilities")
-    print(f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-    
-    # Demo all functions
-    generate_secure_token(32)
-    generate_api_key("bsu")
-    generate_strong_password(16)
-    generate_secret_key()
-    
-    print("\n=== EXAMPLE HASH (SHA-256) ===")
-    print(hash_string("BankingSecure2026!"))

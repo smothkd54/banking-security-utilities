@@ -40,5 +40,5 @@ ENV/
 .DS_Store
 Thumbs.db
 
-hmac_secret.key
-banking_ledger.log
+data/hmac_secret.key
+data/banking_ledger.log
